@@ -1,4 +1,4 @@
-#include "../include/rawsocket.h"
+#include "../include/socket/rawsocket.h"
 
 analyzer::RawSocket::RawSocket()
 {
@@ -12,8 +12,7 @@ int analyzer::RawSocket::getDescriptor() const
 
 analyzer::RawSocket::~RawSocket()
 {
-    close(_sockd);
-    _sockd = 0;
+    closeSocket();
 }
 
 void analyzer::RawSocket::closeSocket()

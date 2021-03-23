@@ -7,24 +7,23 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-namespace analyzer
+class RawSocket
 {
-    class RawSocket 
+public:
+    static RawSocket &getInstance()
     {
-    public:
-        static RawSocket& getInstance()
-        {
-            static RawSocket _instance;
-            return _instance;
-        }
-        int getDescriptor() const;
-        void closeSocket();
-        ~RawSocket();
-    protected:
-        RawSocket();
-    private:
-        int _sockd = 0;
-    };
-}
+        static RawSocket _instance;
+        return _instance;
+    }
+    int getDescriptor() const;
+    void closeSocket();
+    ~RawSocket();
+
+protected:
+    RawSocket();
+
+private:
+    int _sockd = 0;
+};
 
 #endif // RAW_SOCKET_H

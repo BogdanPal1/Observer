@@ -7,7 +7,7 @@
 int main(int argc, char* argv[])
 {
     // Creating raw socket
-    analyzer::RawSocket socket = analyzer::RawSocket::getInstance();
+    RawSocket socket = RawSocket::getInstance();
     int desc = 0;
     desc = socket.getDescriptor();
     if (desc < 0)

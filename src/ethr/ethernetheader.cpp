@@ -1,4 +1,4 @@
-#include "../../include/ethr/ethernetheader.h"
+#include "ethr/ethernetheader.h"
 
 EthernetHeader::EthernetHeader()
 {

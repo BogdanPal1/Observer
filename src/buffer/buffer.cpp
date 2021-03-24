@@ -1,4 +1,4 @@
-#include "../../include/buffer/buffer.h"
+#include "buffer/buffer.h"
 
 Buffer::Buffer()
 {

@@ -4,14 +4,15 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+    
         {
-            "name": "g++-8 - Сборка и отладка активного файла",
+            "name": "g++-8 - Отладка активного файла",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "program": "build/app/analyzer",
             "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "stopAtEntry": true,
+            "cwd": "build/app/",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -22,7 +23,6 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: g++-8 сборка активного файла",
             "miDebuggerPath": "/usr/bin/gdb"
         }
     ]

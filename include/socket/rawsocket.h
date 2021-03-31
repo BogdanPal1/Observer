@@ -2,6 +2,7 @@
 #define RAW_SOCKET_H
 
 #include <sys/socket.h>
+#include <netinet/if_ether.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdlib.h>

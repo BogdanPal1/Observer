@@ -12,6 +12,7 @@ public:
     Buffer& operator=(const Buffer& other);
     ~Buffer();
 
+    unsigned char* getBuffer();
     size_t getCapacity() const;
     size_t getSize() const;
 private:

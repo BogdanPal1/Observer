@@ -2,7 +2,7 @@
 
 RawSocket::RawSocket()
 {
-    _sockd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+    _sockd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 }
 
 int RawSocket::getDescriptor() const

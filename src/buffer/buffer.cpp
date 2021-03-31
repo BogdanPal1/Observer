@@ -10,7 +10,7 @@ Buffer::Buffer(size_t bufferCapacity)
 {
     _capacity = bufferCapacity;
     _buf = new unsigned char[_capacity];
-    _buf = {0};
+    //_buf = {0};
 }
 
 Buffer::Buffer(const Buffer& other)
@@ -41,6 +41,11 @@ Buffer& Buffer::operator=(const Buffer& other)
 Buffer::~Buffer()
 {
     delete [] _buf;
+}
+
+unsigned char* Buffer::getBuffer() 
+{
+    return _buf;
 }
 
 size_t Buffer::getCapacity() const

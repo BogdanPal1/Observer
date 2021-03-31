@@ -2,14 +2,11 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: g++-8 сборка активного файла",
-            "command": "/usr/bin/g++-8",
+            "label": "C/C++: CMake build",
+            "command": "/snap/bin/cmake",
             "args": [
-                "-g",
-                "-I${workspaceFolder}/include/",
-                "${workspaceFolder}/src/*.cpp",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "--build",
+                "build"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -22,6 +19,44 @@
                 "isDefault": true
             },
             "detail": "Задача создана отладчиком."
+        },
+        {
+            "type": "shell",
+            "label": "Shell: Remove build folder",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "process",
+            "label": "C/C++: CMake setup",
+            "command": "/snap/bin/cmake",
+            "args": [
+                "-S",
+                "${workspaceFolder}",
+                "-B",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "C/C++: CMake rebuild",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Shell: Remove build folder",
+                "C/C++: CMake setup",
+                "C/C++: CMake build"
+            ],
+            "problemMatcher": [],
         }
     ],
     "version": "2.0.0"

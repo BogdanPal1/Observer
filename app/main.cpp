@@ -1,16 +1,16 @@
 #include "socket/rawsocket.h"
 #include "buffer/buffer.h"
+#include <netinet/ip.h>
 #include <netdb.h>
+#include <cstring>
 #include <stdlib.h>
 #include <iostream>
-#include <string_view>
 
-
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-    struct sockaddr saddr;
+    struct sockaddr_in source_socket_address, dest_socket_address;
     ssize_t saddrLength;
-    
+
     // Creating raw socket
     RawSocket socket = RawSocket::getInstance();
     int desc = 0;
@@ -21,9 +21,37 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
     std::cout << "Socket created with descriptor: " << desc << std::endl;
-    Buffer* b = new Buffer(4096);
-    ssize_t bsize = recvfrom(desc, b, b->getCapacity(), 0, &saddr, (socklen_t*)&saddrLength);
-    socket.closeSocket();
+    Buffer *b = new Buffer(65535);
+    ssize_t bsize = 0;
+    while (true)
+    {
+        bsize = recvfrom(desc, b->getBuffer(), b->getCapacity(), 0, nullptr, nullptr);
+        if (bsize == -1)
+        {
+            printf("Failed to get packets\n");
+            socket.closeSocket();
+            return 1;
+        }
 
+        struct iphdr *ip_packet = (struct iphdr *)(b->getBuffer());
+
+        memset(&source_socket_address, 0, sizeof(source_socket_address));
+        source_socket_address.sin_addr.s_addr = ip_packet->saddr;
+        memset(&dest_socket_address, 0, sizeof(dest_socket_address));
+        dest_socket_address.sin_addr.s_addr = ip_packet->daddr;
+
+        printf("Incoming Packet: \n");
+        printf("Packet Size (bytes): %d\n", ntohs(ip_packet->tot_len));
+        printf("Source Address: %s\n", (char *)inet_ntoa(source_socket_address.sin_addr));
+        printf("Destination Address: %s\n", (char *)inet_ntoa(dest_socket_address.sin_addr));
+        printf("Identification: %d\n\n", ntohs(ip_packet->id));
+
+        if(bsize > 4096) {
+            socket.closeSocket();
+            exit(EXIT_SUCCESS);
+        }
+    }
+    socket.closeSocket();
+    std::cout << bsize << std::endl;
     exit(EXIT_SUCCESS);
 }

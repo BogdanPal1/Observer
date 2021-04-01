@@ -21,7 +21,7 @@ public:
     unsigned short getType() const;
 
 private:
-    struct ethhdr* _header;
+    struct ethhdr* _eth;
     std::vector<unsigned char> _destAddr;
     std::vector<unsigned char> _srcAddr;
 };

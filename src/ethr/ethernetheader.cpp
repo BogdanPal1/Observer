@@ -2,42 +2,42 @@
 
 EthernetHeader::EthernetHeader()
 {
-    _header = new ethhdr;
+    _eth = new ethhdr;
 }
 
 EthernetHeader::~EthernetHeader()
 {
-    delete _header;
+    delete _eth;
 }
 
 void EthernetHeader::setDestinationAddress(unsigned char* destination)
 {
     for (int i = 0; i < ETH_ALEN; ++i)
-        _header->h_dest[i] = destination[i];
+        _eth->h_dest[i] = destination[i];
 }
 
 void EthernetHeader::setSourceAddress(unsigned char* source)
 {
     for (int i = 0; i < ETH_ALEN; ++i)
-        _header->h_source[i] = source[i];
+        _eth->h_source[i] = source[i];
 }
 
 unsigned char* EthernetHeader::getDestinationAddress() const
 {
-    return _header->h_dest;
+    return _eth->h_dest;
 }
 
 unsigned char* EthernetHeader::getSourceAddress() const
 {
-    return _header->h_source;
+    return _eth->h_source;
 }
 
 void EthernetHeader::setType(unsigned short protocolType)
 {
-    _header->h_proto = protocolType;
+    _eth->h_proto = protocolType;
 }
 
 unsigned short EthernetHeader::getType() const
 {
-    return _header->h_proto;
+    return _eth->h_proto;
 }

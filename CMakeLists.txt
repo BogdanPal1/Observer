@@ -8,4 +8,6 @@ add_subdirectory(src/socket)
 
 add_subdirectory(src/ethr)
 
+add_subdirectory(src/iphdr)
+
 add_subdirectory(app)

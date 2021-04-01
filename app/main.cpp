@@ -1,5 +1,6 @@
 #include "socket/rawsocket.h"
 #include "buffer/buffer.h"
+#include "iphdr/ipheader.h"
 #include <netinet/ip.h>
 #include <netdb.h>
 #include <cstring>
@@ -32,19 +33,19 @@ int main(int argc, char *argv[])
             socket.closeSocket();
             return 1;
         }
-
-        struct iphdr *ip_packet = (struct iphdr *)(b->getBuffer());
+        IPHeader* ip_hdr = (IPHeader*)b;
+        //struct iphdr *ip_packet = (struct iphdr *)(b->getBuffer());
 
         memset(&source_socket_address, 0, sizeof(source_socket_address));
-        source_socket_address.sin_addr.s_addr = ip_packet->saddr;
+        source_socket_address.sin_addr.s_addr = ip_hdr->getSource();
         memset(&dest_socket_address, 0, sizeof(dest_socket_address));
-        dest_socket_address.sin_addr.s_addr = ip_packet->daddr;
+        dest_socket_address.sin_addr.s_addr = ip_hdr->getDestination();
 
         printf("Incoming Packet: \n");
-        printf("Packet Size (bytes): %d\n", ntohs(ip_packet->tot_len));
+        printf("Packet Size (bytes): %d\n", ntohs(ip_hdr->getLen()));
         printf("Source Address: %s\n", (char *)inet_ntoa(source_socket_address.sin_addr));
         printf("Destination Address: %s\n", (char *)inet_ntoa(dest_socket_address.sin_addr));
-        printf("Identification: %d\n\n", ntohs(ip_packet->id));
+        printf("Identification: %d\n\n", ntohs(ip_hdr->getId()));
 
         if(bsize > 4096) {
             socket.closeSocket();

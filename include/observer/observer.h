@@ -3,6 +3,7 @@
 
 #include <getopt.h>
 #include <net/if.h>
+#include <netpacket/packet.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -34,6 +35,8 @@ private:
     Observer& operator=(const Observer&& other) = delete;
 
     void listDevicesAndExit();
+    int getDeviceIndex(char *name) const;
+    void openInterface(char *device);
 
 private:
     char *_device;

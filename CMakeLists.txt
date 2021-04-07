@@ -12,4 +12,6 @@ add_subdirectory(src/iphdr)
 
 add_subdirectory(src/observer)
 
+add_subdirectory(src/exceptions)
+
 add_subdirectory(app)

@@ -67,7 +67,8 @@ void Observer::listDevicesAndExit()
     if (sockd < 0)
     {
         std::cerr << "Can't create socket." << std::endl;
-        exit(EXIT_FAILURE);
+        throw Exception("ERROR: can't create socket");
+        //exit(EXIT_FAILURE);
     }
 
     for (i = nameIndex; !(i->if_index == 0 && i->if_name == nullptr); i++)
@@ -96,7 +97,8 @@ void Observer::openInterface()
         _sockd = socket(AF_PACKET, SOCK_DGRAM, 0);
         if (_sockd < 0)
         {
-            std::cerr << "Can't open UDP socket. " << errno << std::endl;
+            throw Exception("ERROR: can't create UDP socket");
+            //std::cerr << "Can't open UDP socket. " << errno << std::endl;
             //exit(EXIT_FAILURE);
         }
     }
@@ -106,7 +108,8 @@ void Observer::openInterface()
         _sockd = socket(AF_PACKET, SOCK_RAW, htons(_protocol));
         if (_sockd < 0)
         {
-            std::cerr << "Can't open RAW socket" << std::endl;
+            throw Exception("ERROR: can't create RAW socket");
+            //std::cerr << "Can't open RAW socket" << std::endl;
             //exit(EXIT_FAILURE);
         }
     }

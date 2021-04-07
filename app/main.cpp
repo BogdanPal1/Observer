@@ -2,6 +2,7 @@
 #include "buffer/buffer.h"
 #include "iphdr/ipheader.h"
 #include "observer/observer.h"
+#include "exceptions/exceptions.h"
 #include <netinet/ip.h>
 #include <netdb.h>
 #include <cstring>
@@ -11,7 +12,14 @@
 int main(int argc, char *argv[])
 {
     Observer& a = Observer::getObserver();
-    a.init(argc, argv);
+    try
+    {
+        a.init(argc, argv);
+    }
+    catch(Exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     a.cleanup();
     return 0;
     // struct sockaddr_in source_socket_address, dest_socket_address;

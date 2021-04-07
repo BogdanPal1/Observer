@@ -12,6 +12,8 @@
 #include <cstring>
 #include <iostream>
 
+#include "exceptions/exceptions.h"
+
 /**
  * @brief Main class
  * 

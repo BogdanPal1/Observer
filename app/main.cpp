@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
 {
     Observer& a = Observer::getObserver();
     a.init(argc, argv);
+    a.cleanup();
     return 0;
     // struct sockaddr_in source_socket_address, dest_socket_address;
     // ssize_t saddrLength;

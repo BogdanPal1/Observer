@@ -1,7 +1,8 @@
 #include "observer/observer.h"
 
-Observer::Observer()
+Observer::Observer() : _device(nullptr), _protocol(0), _sockd(-1)
 {
+
 }
 
 Observer::~Observer()
@@ -13,7 +14,7 @@ void Observer::init(int argc, char *argv[])
     struct sockaddr_ll saddrll = {0};
     int opt;
 
-    while ((opt = getopt(argc, argv, "d:l")) != -1)
+    while ((opt = getopt(argc, argv, "i:d:l")) != -1)
     {
         switch (opt)
         {
@@ -22,7 +23,11 @@ void Observer::init(int argc, char *argv[])
             break;
 
         case 'd':
-            _device = optarg;
+            _device = getOption(optarg);
+            break;
+
+        case 'i':
+            _protocol = getProtocolByName(getOption(optarg));
             break;
 
         case '?':
@@ -31,16 +36,25 @@ void Observer::init(int argc, char *argv[])
         }
     }
 
-    saddrll.sll_family = AF_PACKET;
-    saddrll.sll_ifindex = getDeviceIndex(_device);
-    saddrll.sll_protocol = 0;
+    openInterface();
+}
+
+void Observer::cleanup()
+{
+    if (_sockd >= 0)
+    {
+        close(_sockd);
+        std::cout << "Socket closed" << std::endl;
+    }
+
+    delete [] _buffer;
 }
 
 void Observer::listDevicesAndExit()
 {
     struct if_nameindex *nameIndex, *i;
-    struct ifreq iReq;
-    int dUDP;
+    struct ifreq ifr = {0};
+    int sockd;
 
     nameIndex = if_nameindex();
     if (nameIndex == nullptr)
@@ -49,8 +63,8 @@ void Observer::listDevicesAndExit()
         exit(EXIT_FAILURE);
     }
 
-    dUDP = socket(AF_INET, SOCK_DGRAM, 0);
-    if (dUDP < 0)
+    sockd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockd < 0)
     {
         std::cerr << "Can't create socket." << std::endl;
         exit(EXIT_FAILURE);
@@ -58,29 +72,75 @@ void Observer::listDevicesAndExit()
 
     for (i = nameIndex; !(i->if_index == 0 && i->if_name == nullptr); i++)
     {
-        strcpy(iReq.ifr_name, i->if_name);
-        int m = ioctl(dUDP, SIOCGIFFLAGS, &iReq);
-        std::cout << i->if_index << ": " << i->if_name << " " << ((iReq.ifr_ifru.ifru_flags |= IFF_UP) ? "UP" : "DOWN") << std::endl;
+        strcpy(ifr.ifr_name, i->if_name);
+        int m = ioctl(sockd, SIOCGIFFLAGS, &ifr);
+        std::cout << i->if_index << ": " << i->if_name << " " << ((ifr.ifr_ifru.ifru_flags |= IFF_UP) ? "UP" : "DOWN") << std::endl;
     }
 
     if_freenameindex(nameIndex);
-    close(dUDP);
+    close(sockd);
     exit(EXIT_SUCCESS);
 }
 
-int Observer::getDeviceIndex(char *name) const
+void Observer::openInterface()
 {
-    struct ifreq iReq = {0};
-
-    int sockd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockd < 0)
+    unsigned int devIndex = 0;
+    if (_device != nullptr)
     {
-        std::cerr << "Can't create socket" << std::endl;
-        exit(EXIT_FAILURE);
+        devIndex = getDeviceIndex(_device);
     }
 
-    int ioctlResult = ioctl(sockd, SIOCGIFINDEX, name, &iReq);
-    close(sockd);
+    if (devIndex == 0)
+    {
+        // We have "any" device
+        _sockd = socket(AF_PACKET, SOCK_DGRAM, 0);
+        if (_sockd < 0)
+        {
+            std::cerr << "Can't open UDP socket. " << errno << std::endl;
+            //exit(EXIT_FAILURE);
+        }
+    }
+    else
+    {
+        // We specified concrete device and now can open raw socket
+        _sockd = socket(AF_PACKET, SOCK_RAW, htons(_protocol));
+        if (_sockd < 0)
+        {
+            std::cerr << "Can't open RAW socket" << std::endl;
+            //exit(EXIT_FAILURE);
+        }
+    }
 
-    return iReq.ifr_ifru.ifru_ivalue;
+    // TODO: we need to bind socket to device which we want to observe
+}
+
+int Observer::getProtocolByName(char *name) const
+{
+    if (strcmp(name, "IPv4") == 0)
+    {
+        return static_cast<int>(Protocols::IPv4);
+    }
+    else if (strcmp(name, "IPv6") == 0)
+    {
+        return static_cast<int>(Protocols::IPv6);
+    }
+    else if (strcmp(name, "ARP") == 0)
+    {
+        return static_cast<int>(Protocols::ARP);
+    }
+    return 0;
+}
+
+char* Observer::getOption(char* option)
+{
+    size_t size = 16;
+    _buffer = new char[size + 1];
+
+    snprintf(_buffer, size, "%s", option);
+    return _buffer;
+}
+
+unsigned int Observer::getDeviceIndex(char *name) const
+{
+    return if_nametoindex(name);
 }

@@ -11,8 +11,10 @@
 #include <unistd.h>
 #include <cstring>
 #include <iostream>
+#include <memory>
 
 #include "exceptions/exceptions.h"
+#include "socket/socket.h"
 
 /**
  * @brief Main class
@@ -40,10 +42,10 @@ private:
     Observer& operator=(const Observer&& other) = delete;
 
     void listDevicesAndExit();
-    unsigned int getDeviceIndex(char *name) const;
-    int getProtocolByName(char *name) const;
+    unsigned int getDeviceIndex(const std::string& name) const;
+    int getProtocolByName(const std::string& name) const;
     void openInterface();
-    char* getOption(char* option);
+    std::string getOption(char* option);
 
 private:
     enum class Protocols
@@ -54,10 +56,11 @@ private:
     };
 
 private:
-    char *_device;
-    char*_buffer;
+    std::string _device;
+    std::unique_ptr<char[]> _buffer;
     int _protocol;
     int _sockd;
+    std::unique_ptr<Socket> _socket;
 };
 
 #endif // OBSERVER_H

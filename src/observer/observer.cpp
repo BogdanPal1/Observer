@@ -1,6 +1,6 @@
 #include "observer/observer.h"
 
-Observer::Observer() : _device(nullptr), _protocol(0), _sockd(-1)
+Observer::Observer() : _device(""), _protocol(0), _sockd(-1)
 {
 
 }
@@ -46,8 +46,6 @@ void Observer::cleanup()
         close(_sockd);
         std::cout << "Socket closed" << std::endl;
     }
-
-    delete [] _buffer;
 }
 
 void Observer::listDevicesAndExit()
@@ -68,7 +66,6 @@ void Observer::listDevicesAndExit()
     {
         std::cerr << "Can't create socket." << std::endl;
         throw Exception("ERROR: can't create socket");
-        //exit(EXIT_FAILURE);
     }
 
     for (i = nameIndex; !(i->if_index == 0 && i->if_name == nullptr); i++)
@@ -86,7 +83,7 @@ void Observer::listDevicesAndExit()
 void Observer::openInterface()
 {
     unsigned int devIndex = 0;
-    if (_device != nullptr)
+    if (_device != "")
     {
         devIndex = getDeviceIndex(_device);
     }
@@ -94,56 +91,52 @@ void Observer::openInterface()
     if (devIndex == 0)
     {
         // We have "any" device
-        _sockd = socket(AF_PACKET, SOCK_DGRAM, 0);
-        if (_sockd < 0)
+        _socket = std::unique_ptr<Socket>(new Socket(Socket::Type::DGRAM, 0));
+        if (_socket->getDescriptor() < 0)
         {
             throw Exception("ERROR: can't create UDP socket");
-            //std::cerr << "Can't open UDP socket. " << errno << std::endl;
-            //exit(EXIT_FAILURE);
         }
     }
     else
     {
         // We specified concrete device and now can open raw socket
-        _sockd = socket(AF_PACKET, SOCK_RAW, htons(_protocol));
-        if (_sockd < 0)
+        _socket = std::unique_ptr<Socket>(new Socket(Socket::Type::RAW, htons(_protocol)));
+        if (_socket->getDescriptor() < 0)
         {
             throw Exception("ERROR: can't create RAW socket");
-            //std::cerr << "Can't open RAW socket" << std::endl;
-            //exit(EXIT_FAILURE);
         }
     }
 
     // TODO: we need to bind socket to device which we want to observe
 }
 
-int Observer::getProtocolByName(char *name) const
+int Observer::getProtocolByName(const std::string& name) const
 {
-    if (strcmp(name, "IPv4") == 0)
+    if (name == "IPv4")
     {
         return static_cast<int>(Protocols::IPv4);
     }
-    else if (strcmp(name, "IPv6") == 0)
+    else if (name == "IPv6")
     {
         return static_cast<int>(Protocols::IPv6);
     }
-    else if (strcmp(name, "ARP") == 0)
+    else if (name == "ARP")
     {
         return static_cast<int>(Protocols::ARP);
     }
     return 0;
 }
 
-char* Observer::getOption(char* option)
+std::string Observer::getOption(char* option)
 {
     size_t size = 16;
-    _buffer = new char[size + 1];
+    _buffer = std::unique_ptr<char[]>(new char[size + 1]);
 
-    snprintf(_buffer, size, "%s", option);
-    return _buffer;
+    snprintf(_buffer.get(), size, "%s", option);
+    return std::string(_buffer.get());
 }
 
-unsigned int Observer::getDeviceIndex(char *name) const
+unsigned int Observer::getDeviceIndex(const std::string& name) const
 {
-    return if_nametoindex(name);
+    return if_nametoindex(name.c_str());
 }

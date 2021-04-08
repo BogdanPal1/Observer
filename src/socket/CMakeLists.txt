@@ -1,7 +1,7 @@
-set(HEADER_LIST "../../include/socket/rawsocket.h")
+set(HEADER_LIST "../../include/socket/socket.h")
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(socket rawsocket.cpp ${HEADER_LIST})
+add_library(socket socket.cpp ${HEADER_LIST})
 
 # We need this directory, and users of our library will need it too
 target_include_directories(socket PUBLIC ../../include/)

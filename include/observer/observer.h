@@ -53,6 +53,7 @@ private:
         IPv4 = ETH_P_IP,
         IPv6 = ETH_P_IPV6,
         ARP = ETH_P_ARP,
+        ALL = ETH_P_ALL,
     };
 
 private:

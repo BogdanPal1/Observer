@@ -82,6 +82,8 @@ void Observer::listDevicesAndExit()
 
 void Observer::openInterface()
 {
+    struct sockaddr_ll saddrll;
+    memset(&saddrll, 0, sizeof(saddrll));
     unsigned int devIndex = 0;
     if (_device != "")
     {
@@ -108,6 +110,25 @@ void Observer::openInterface()
     }
 
     // TODO: we need to bind socket to device which we want to observe
+    saddrll.sll_family = AF_PACKET;
+    saddrll.sll_protocol = htons(_protocol);
+    saddrll.sll_ifindex = devIndex;
+    
+    if (bind(_socket->getDescriptor(), (const sockaddr*)&saddrll, sizeof(saddrll)) < 0)
+    {
+        if (errno == ENODEV)
+        {
+            throw Exception("ERROR: no such device");
+        }
+        else if (errno == ENETDOWN)
+        {
+            throw Exception("ERROR: network is down");
+        }
+        else 
+        {
+            throw Exception("ERROR: can't bind socket");
+        }
+    }
 }
 
 int Observer::getProtocolByName(const std::string& name) const
@@ -123,6 +144,10 @@ int Observer::getProtocolByName(const std::string& name) const
     else if (name == "ARP")
     {
         return static_cast<int>(Protocols::ARP);
+    }
+    else if (name == "ALL")
+    {
+        return static_cast<int>(Protocols::ALL);
     }
     return 0;
 }

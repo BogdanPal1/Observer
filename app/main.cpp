@@ -19,6 +19,8 @@ int main(int argc, char *argv[])
     catch(Exception& e)
     {
         std::cerr << e.what() << '\n';
+        a.cleanup();
+        exit(EXIT_FAILURE);
     }
     a.cleanup();
     return 0;

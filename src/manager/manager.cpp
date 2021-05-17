@@ -41,9 +41,9 @@ void Manager::init(int argc, char *argv[])
 
 void Manager::cleanup()
 {
-    if (_sockd >= 0)
+    if (_socket->getDescriptor() >= 0)
     {
-        close(_sockd);
+        close(_socket->getDescriptor());
         std::cout << "Socket closed" << std::endl;
     }
 }

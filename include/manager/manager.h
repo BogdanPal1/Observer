@@ -17,7 +17,8 @@
 #include "socket/socket.h"
 
 /**
- * @brief Main class
+ * @brief The Observer class 
+ * Main class of the program
  * 
  * @details This class contains main methods of program 
  */
@@ -48,6 +49,11 @@ private:
     std::string getOption(char* option);
 
 private:
+    /**
+     * @brief The Protocols enumeration
+     * 
+     * 
+     */
     enum class Protocols
     {
         IPv4 = ETH_P_IP,

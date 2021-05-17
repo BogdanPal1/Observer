@@ -22,5 +22,8 @@ Socket::~Socket()
 
 void Socket::closeSocket()
 {
-    close(_sockd);
+    if (_sockd >= 0)
+    {
+        close(_sockd);
+    }
 }

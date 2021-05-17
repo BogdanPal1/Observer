@@ -1,7 +1,7 @@
 #include "socket/socket.h"
 #include "buffer/buffer.h"
 #include "iphdr/ipheader.h"
-#include "observer/observer.h"
+#include "manager/manager.h"
 #include "exceptions/exceptions.h"
 #include <netinet/ip.h>
 #include <netdb.h>
@@ -11,7 +11,7 @@
 
 int main(int argc, char *argv[])
 {
-    Observer& a = Observer::getObserver();
+    Manager& a = Manager::getManager();
     try
     {
         a.init(argc, argv);
@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
         a.cleanup();
         exit(EXIT_FAILURE);
     }
+    std::cout << "Ok\n";
     a.cleanup();
     return 0;
     // struct sockaddr_in source_socket_address, dest_socket_address;

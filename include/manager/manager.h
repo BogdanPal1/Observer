@@ -1,5 +1,5 @@
-#ifndef OBSERVER_H
-#define OBSERVER_H
+#ifndef MANAGER_H
+#define MANAGER_H
 
 #include <getopt.h>
 #include <net/if.h>
@@ -21,25 +21,25 @@
  * 
  * @details This class contains main methods of program 
  */
-class Observer
+class Manager
 {
 public:
-    static Observer& getObserver()
+    static Manager& getManager()
     {
-        static Observer instance;
+        static Manager instance;
         return instance;
     }
 
-    ~Observer();
+    ~Manager();
 
     void init(int argc, char *argv[]);
     void cleanup();
 private:
-    Observer();
-    Observer(const Observer& other) = default;
-    Observer& operator=(const Observer& other) = default;
-    Observer(const Observer&& other) = delete;
-    Observer& operator=(const Observer&& other) = delete;
+    Manager();
+    Manager(const Manager& other) = delete;
+    Manager& operator=(const Manager& other) = delete;
+    Manager(const Manager&& other) = delete;
+    Manager& operator=(const Manager&& other) = delete;
 
     void listDevicesAndExit();
     unsigned int getDeviceIndex(const std::string& name) const;
@@ -64,4 +64,4 @@ private:
     std::unique_ptr<Socket> _socket;
 };
 
-#endif // OBSERVER_H
+#endif // MANAGER_H

@@ -1,15 +1,15 @@
-#include "observer/observer.h"
+#include "manager/manager.h"
 
-Observer::Observer() : _device(""), _protocol(0), _sockd(-1)
+Manager::Manager() : _device(""), _protocol(0), _sockd(-1)
 {
 
 }
 
-Observer::~Observer()
+Manager::~Manager()
 {
 }
 
-void Observer::init(int argc, char *argv[])
+void Manager::init(int argc, char *argv[])
 {
     struct sockaddr_ll saddrll = {0};
     int opt;
@@ -39,7 +39,7 @@ void Observer::init(int argc, char *argv[])
     openInterface();
 }
 
-void Observer::cleanup()
+void Manager::cleanup()
 {
     if (_sockd >= 0)
     {
@@ -48,7 +48,7 @@ void Observer::cleanup()
     }
 }
 
-void Observer::listDevicesAndExit()
+void Manager::listDevicesAndExit()
 {
     struct if_nameindex *nameIndex, *i;
     struct ifreq ifr = {0};
@@ -80,7 +80,7 @@ void Observer::listDevicesAndExit()
     exit(EXIT_SUCCESS);
 }
 
-void Observer::openInterface()
+void Manager::openInterface()
 {
     struct sockaddr_ll saddrll;
     memset(&saddrll, 0, sizeof(saddrll));
@@ -131,7 +131,7 @@ void Observer::openInterface()
     }
 }
 
-int Observer::getProtocolByName(const std::string& name) const
+int Manager::getProtocolByName(const std::string& name) const
 {
     if (name == "IPv4")
     {
@@ -152,7 +152,7 @@ int Observer::getProtocolByName(const std::string& name) const
     return 0;
 }
 
-std::string Observer::getOption(char* option)
+std::string Manager::getOption(char* option)
 {
     size_t size = 16;
     _buffer = std::unique_ptr<char[]>(new char[size + 1]);
@@ -161,7 +161,7 @@ std::string Observer::getOption(char* option)
     return std::string(_buffer.get());
 }
 
-unsigned int Observer::getDeviceIndex(const std::string& name) const
+unsigned int Manager::getDeviceIndex(const std::string& name) const
 {
     return if_nametoindex(name.c_str());
 }

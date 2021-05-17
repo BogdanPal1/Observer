@@ -42,7 +42,8 @@ private:
     Manager(const Manager&& other) = delete;
     Manager& operator=(const Manager&& other) = delete;
 
-    void listDevicesAndExit();
+    [[ noreturn ]] void listDevicesAndExit();
+    [[ noreturn ]] void printHelpAndExit();
     unsigned int getDeviceIndex(const std::string& name) const;
     int getProtocolByName(const std::string& name) const;
     void openInterface();

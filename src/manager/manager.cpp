@@ -14,21 +14,23 @@ void Manager::init(int argc, char *argv[])
     struct sockaddr_ll saddrll = {0};
     int opt;
 
-    while ((opt = getopt(argc, argv, "i:d:l")) != -1)
+    while ((opt = getopt(argc, argv, "p:d:lh")) != -1)
     {
         switch (opt)
         {
         case 'l':
             listDevicesAndExit();
-            break;
 
         case 'd':
             _device = getOption(optarg);
             break;
 
-        case 'i':
+        case 'p':
             _protocol = getProtocolByName(getOption(optarg));
             break;
+
+        case 'h':
+            printHelpAndExit();
 
         case '?':
             std::cout << "Unknown option: " << optopt << std::endl;
@@ -77,6 +79,17 @@ void Manager::listDevicesAndExit()
 
     if_freenameindex(nameIndex);
     close(sockd);
+    exit(EXIT_SUCCESS);
+}
+
+void Manager::printHelpAndExit()
+{
+    std::cout << "Observer 0.0.1 - network packet analyzer" << "\n";
+    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-p=\'protocol\']" << "\n";
+    std::cout << "       -h    Print help and exit" << "\n";
+    std::cout << "       -l    Print all network interfaces in system and exit" << "\n";
+    std::cout << "       -d    Set device for analyzing" << "\n";
+    std::cout << "       -p    Set protocol for analyzing" << "\n";
     exit(EXIT_SUCCESS);
 }
 

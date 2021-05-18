@@ -2,7 +2,7 @@
 
 Manager::Manager() : _device(""), _protocol(0), _sockd(-1)
 {
-
+    _buf = std::unique_ptr<Buffer>(new Buffer(65536));
 }
 
 Manager::~Manager()
@@ -39,6 +39,10 @@ void Manager::init(int argc, char *argv[])
     }
 
     openInterface();
+}
+
+void Manager::start()
+{
 }
 
 void Manager::cleanup()
@@ -85,7 +89,7 @@ void Manager::listDevicesAndExit()
 void Manager::printHelpAndExit()
 {
     std::cout << "Observer 0.0.1 - network packet analyzer" << "\n";
-    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-p=\'protocol\']" << "\n";
+    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-p=\'protocol\']" << "\n" << "\n";
     std::cout << "       -h    Print help and exit" << "\n";
     std::cout << "       -l    Print all network interfaces in system and exit" << "\n";
     std::cout << "       -d    Set device for analyzing" << "\n";
@@ -139,7 +143,7 @@ void Manager::openInterface()
         }
         else 
         {
-            throw Exception("ERROR: can't bind socket");
+            throw Exception("ERROR: unknown error: " + std::to_string(errno));
         }
     }
 }

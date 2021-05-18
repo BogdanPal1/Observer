@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "exceptions/exceptions.h"
+#include "buffer/buffer.h"
 #include "socket/socket.h"
 
 /**
@@ -34,7 +35,9 @@ public:
     ~Manager();
 
     void init(int argc, char *argv[]);
+    void start();
     void cleanup();
+
 private:
     Manager();
     Manager(const Manager& other) = delete;
@@ -66,6 +69,7 @@ private:
 private:
     std::string _device;
     std::unique_ptr<char[]> _buffer;
+    std::unique_ptr<Buffer> _buf;
     int _protocol;
     int _sockd;
     std::unique_ptr<Socket> _socket;

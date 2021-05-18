@@ -7,4 +7,4 @@ add_library(ipheader ipheader.cpp ${HEADER_LIST})
 target_include_directories(ipheader PUBLIC ../../include/)
 
 # All users of this library will need at least C++11
-target_compile_features(ipheader PUBLIC cxx_std_11)
+target_compile_features(ipheader PUBLIC cxx_std_14)

@@ -8,5 +8,5 @@ target_include_directories(manager PUBLIC ../../include/)
 
 target_link_libraries(manager PRIVATE socket)
 
-# All users of this library will need at least C++11
-target_compile_features(manager PUBLIC cxx_std_11)
+# All users of this library will need at least C++14
+target_compile_features(manager PUBLIC cxx_std_14)

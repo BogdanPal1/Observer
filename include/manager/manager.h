@@ -14,7 +14,6 @@
 #include <memory>
 
 #include "exceptions/exceptions.h"
-#include "buffer/buffer.h"
 #include "socket/socket.h"
 
 /**
@@ -68,8 +67,6 @@ private:
 
 private:
     std::string _device;
-    std::unique_ptr<char[]> _buffer;
-    std::unique_ptr<Buffer> _buf;
     int _protocol;
     int _sockd;
     std::unique_ptr<Socket> _socket;

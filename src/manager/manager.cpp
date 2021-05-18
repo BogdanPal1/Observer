@@ -2,7 +2,6 @@
 
 Manager::Manager() : _device(""), _protocol(0), _sockd(-1)
 {
-    _buf = std::unique_ptr<Buffer>(new Buffer(65536));
 }
 
 Manager::~Manager()
@@ -171,11 +170,7 @@ int Manager::getProtocolByName(const std::string& name) const
 
 std::string Manager::getOption(char* option)
 {
-    size_t size = 16;
-    _buffer = std::unique_ptr<char[]>(new char[size + 1]);
-
-    snprintf(_buffer.get(), size, "%s", option);
-    return std::string(_buffer.get());
+    return std::string(option);
 }
 
 unsigned int Manager::getDeviceIndex(const std::string& name) const

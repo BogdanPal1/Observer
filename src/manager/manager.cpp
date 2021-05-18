@@ -10,7 +10,6 @@ Manager::~Manager()
 
 void Manager::init(int argc, char *argv[])
 {
-    struct sockaddr_ll saddrll = {0};
     int opt;
 
     while ((opt = getopt(argc, argv, "p:d:lh")) != -1)
@@ -56,7 +55,8 @@ void Manager::cleanup()
 void Manager::listDevicesAndExit()
 {
     struct if_nameindex *nameIndex, *i;
-    struct ifreq ifr = {0};
+    struct ifreq ifr;
+    memset(&ifr, 0, sizeof(ifr));
     int sockd;
 
     nameIndex = if_nameindex();
@@ -76,7 +76,7 @@ void Manager::listDevicesAndExit()
     for (i = nameIndex; !(i->if_index == 0 && i->if_name == nullptr); i++)
     {
         strcpy(ifr.ifr_name, i->if_name);
-        int m = ioctl(sockd, SIOCGIFFLAGS, &ifr);
+        ioctl(sockd, SIOCGIFFLAGS, &ifr);
         std::cout << i->if_index << ": " << i->if_name << " " << ((ifr.ifr_ifru.ifru_flags |= IFF_UP) ? "UP" : "DOWN") << std::endl;
     }
 

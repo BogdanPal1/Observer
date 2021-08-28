@@ -97,7 +97,7 @@ void Manager::printHelpAndExit()
     std::cout << "       -l    Print all network interfaces in system and exit\n";
     std::cout << "       -d    Set device for analyzing\n";
     std::cout << "       -p    Set protocol for analyzing\n";
-    std::cout << "       -p    Set output file\n";
+    std::cout << "       -f    Set output file\n";
     exit(EXIT_SUCCESS);
 }
 
@@ -114,8 +114,7 @@ void Manager::openInterface()
     if (devIndex == 0)
     {
         // We have "any" device
-        // TODO: need to change to make_unique
-        _socket = std::unique_ptr<Socket>(new Socket(Socket::Type::DGRAM, 0));
+        _socket = std::make_unique<Socket>(Socket::Type::DGRAM, 0);
         if (_socket->getDescriptor() < 0)
         {
             throw Exception("ERROR: can't create UDP socket");
@@ -124,8 +123,7 @@ void Manager::openInterface()
     else
     {
         // We specified concrete device and now can open raw socket
-        // TODO: need to change to make_unique
-        _socket = std::unique_ptr<Socket>(new Socket(Socket::Type::RAW, htons(_protocol)));
+        _socket = std::make_unique<Socket>(Socket::Type::RAW, htons(_protocol));
         if (_socket->getDescriptor() < 0)
         {
             throw Exception("ERROR: can't create RAW socket");

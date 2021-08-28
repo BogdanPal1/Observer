@@ -67,6 +67,7 @@ private:
 
 private:
     std::string _device;
+    std::string _outputFile;
     int _protocol;
     int _sockd;
     std::unique_ptr<Socket> _socket;

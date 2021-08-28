@@ -1,6 +1,6 @@
 #include "manager/manager.h"
 
-Manager::Manager() : _device(""), _protocol(0), _sockd(-1)
+Manager::Manager() : _device(""), _outputFile(""), _protocol(0), _sockd(-1)
 {
 }
 
@@ -12,7 +12,7 @@ void Manager::init(int argc, char *argv[])
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "p:d:lh")) != -1)
+    while ((opt = getopt(argc, argv, "p:d:f:lh")) != -1)
     {
         switch (opt)
         {
@@ -25,6 +25,10 @@ void Manager::init(int argc, char *argv[])
 
         case 'p':
             _protocol = getProtocolByName(getOption(optarg));
+            break;
+        
+        case 'f':
+            _outputFile = getOption(optarg);
             break;
 
         case 'h':
@@ -88,11 +92,12 @@ void Manager::listDevicesAndExit()
 void Manager::printHelpAndExit()
 {
     std::cout << "Observer 0.0.1 - network packet analyzer" << "\n";
-    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-p=\'protocol\']" << "\n" << "\n";
-    std::cout << "       -h    Print help and exit" << "\n";
-    std::cout << "       -l    Print all network interfaces in system and exit" << "\n";
-    std::cout << "       -d    Set device for analyzing" << "\n";
-    std::cout << "       -p    Set protocol for analyzing" << "\n";
+    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-p=\'protocol\'] [-f=\'filename\']" << "\n" << "\n";
+    std::cout << "       -h    Print help and exit\n";
+    std::cout << "       -l    Print all network interfaces in system and exit\n";
+    std::cout << "       -d    Set device for analyzing\n";
+    std::cout << "       -p    Set protocol for analyzing\n";
+    std::cout << "       -p    Set output file\n";
     exit(EXIT_SUCCESS);
 }
 
@@ -109,6 +114,7 @@ void Manager::openInterface()
     if (devIndex == 0)
     {
         // We have "any" device
+        // TODO: need to change to make_unique
         _socket = std::unique_ptr<Socket>(new Socket(Socket::Type::DGRAM, 0));
         if (_socket->getDescriptor() < 0)
         {
@@ -118,6 +124,7 @@ void Manager::openInterface()
     else
     {
         // We specified concrete device and now can open raw socket
+        // TODO: need to change to make_unique
         _socket = std::unique_ptr<Socket>(new Socket(Socket::Type::RAW, htons(_protocol)));
         if (_socket->getDescriptor() < 0)
         {

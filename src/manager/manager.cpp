@@ -70,8 +70,8 @@ void Manager::listDevicesAndExit()
         exit(EXIT_FAILURE);
     }
 
-    sockd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockd < 0)
+    _socket = std::make_unique<Socket>(Socket::Domain::INET, Socket::Type::DGRAM, 0);
+    if (_socket->getDescriptor() < 0)
     {
         std::cerr << "Can't create socket." << std::endl;
         throw Exception("ERROR: can't create socket");
@@ -114,7 +114,7 @@ void Manager::openInterface()
     if (devIndex == 0)
     {
         // We have "any" device
-        _socket = std::make_unique<Socket>(Socket::Type::DGRAM, 0);
+        _socket = std::make_unique<Socket>(Socket::Domain::PACKET, Socket::Type::DGRAM, 0);
         if (_socket->getDescriptor() < 0)
         {
             throw Exception("ERROR: can't create UDP socket");
@@ -123,7 +123,7 @@ void Manager::openInterface()
     else
     {
         // We specified concrete device and now can open raw socket
-        _socket = std::make_unique<Socket>(Socket::Type::RAW, htons(_protocol));
+        _socket = std::make_unique<Socket>(Socket::Domain::PACKET, Socket::Type::RAW, htons(_protocol));
         if (_socket->getDescriptor() < 0)
         {
             throw Exception("ERROR: can't create RAW socket");

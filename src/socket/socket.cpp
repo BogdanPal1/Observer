@@ -2,12 +2,12 @@
 
 Socket::Socket()
 {
-    _sockd = socket(AF_PACKET, static_cast<int>(Type::DGRAM), 0);
+    _sockd = socket(static_cast<int>(Domain::PACKET), static_cast<int>(Type::DGRAM), 0);
 }
 
-Socket::Socket(Type type, int protocol)
+Socket::Socket(Domain domain, Type type, int protocol)
 {
-    _sockd = socket(AF_PACKET, static_cast<int>(type), protocol);
+    _sockd = socket(static_cast<int>(domain), static_cast<int>(type), protocol);
 }
 
 int Socket::getDescriptor() const

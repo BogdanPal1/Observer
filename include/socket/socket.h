@@ -25,6 +25,12 @@ public:
         RAW = SOCK_RAW,
     };
 
+    enum class Domain
+    {
+        INET = AF_INET,
+        PACKET = AF_PACKET,
+    };
+
 public:
     /**
     * @brief Construct a new Socket object
@@ -38,7 +44,7 @@ public:
      * @param type The type of socket
      * @param protocol The protocol
      */
-    Socket(Type type, int protocol);
+    Socket(Domain domain, Type type, int protocol);
 
     /**
      * @brief Get the Descriptor object
@@ -60,7 +66,7 @@ public:
     ~Socket();
 
 private:
-    int _sockd = 0;
+    int _sockd = -1;
 };
 
 #endif // OBSERVER_SOCKET_H

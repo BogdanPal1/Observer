@@ -1,6 +1,6 @@
 #include "manager/manager.h"
 
-Manager::Manager() : _device(""), _outputFile(""), _protocol(0), _sockd(-1)
+Manager::Manager() : _device(""), _outputFile(""), _protocol(0), _sockd(-1), _socket(nullptr)
 {
 }
 
@@ -18,40 +18,34 @@ void Manager::init(int argc, char *argv[])
         {
         case 'l':
             listDevicesAndExit();
-
         case 'd':
             _device = getOption(optarg);
             break;
-
         case 'p':
             _protocol = getProtocolByName(getOption(optarg));
             break;
-        
         case 'f':
             _outputFile = getOption(optarg);
             break;
-
         case 'h':
             printHelpAndExit();
-
         case '?':
             std::cout << "Unknown option: " << optopt << std::endl;
             break;
         }
     }
-
-    openInterface();
 }
 
 void Manager::start()
 {
+    openInterface();
 }
 
 void Manager::cleanup()
 {
     if (_socket->getDescriptor() >= 0)
     {
-        close(_socket->getDescriptor());
+        _socket->closeSocket();
         std::cout << "Socket closed" << std::endl;
     }
 }
@@ -66,14 +60,12 @@ void Manager::listDevicesAndExit()
     nameIndex = if_nameindex();
     if (nameIndex == nullptr)
     {
-        std::cerr << "if_nameindex() return null pointer" << std::endl;
-        exit(EXIT_FAILURE);
+        throw Exception("ERROR: if_nameindex() return null pointer");
     }
 
     _socket = std::make_unique<Socket>(Socket::Domain::INET, Socket::Type::DGRAM, 0);
     if (_socket->getDescriptor() < 0)
     {
-        std::cerr << "Can't create socket." << std::endl;
         throw Exception("ERROR: can't create socket");
     }
 
@@ -85,7 +77,7 @@ void Manager::listDevicesAndExit()
     }
 
     if_freenameindex(nameIndex);
-    close(sockd);
+    cleanup();
     exit(EXIT_SUCCESS);
 }
 

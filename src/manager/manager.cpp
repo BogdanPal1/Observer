@@ -59,7 +59,6 @@ void Manager::listDevicesAndExit()
     nameIndex = if_nameindex();
     if (nameIndex == nullptr)
     {
-        free(&ifr);
         std::cerr << "ERROR: if_nameindex() return null pointer" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -67,7 +66,6 @@ void Manager::listDevicesAndExit()
     _socket = std::make_unique<Socket>(Socket::Domain::INET, Socket::Type::DGRAM, 0);
     if (_socket->getDescriptor() < 0)
     {
-        free(&ifr);
         if_freenameindex(nameIndex);
         std::cerr << "ERROR: can't create socket" << std::endl;
         exit(EXIT_FAILURE);

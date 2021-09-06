@@ -55,24 +55,28 @@ void Manager::listDevicesAndExit()
     struct if_nameindex *nameIndex, *i;
     struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
-    int sockd;
 
     nameIndex = if_nameindex();
     if (nameIndex == nullptr)
     {
-        throw Exception("ERROR: if_nameindex() return null pointer");
+        free(&ifr);
+        std::cerr << "ERROR: if_nameindex() return null pointer" << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     _socket = std::make_unique<Socket>(Socket::Domain::INET, Socket::Type::DGRAM, 0);
     if (_socket->getDescriptor() < 0)
     {
-        throw Exception("ERROR: can't create socket");
+        free(&ifr);
+        if_freenameindex(nameIndex);
+        std::cerr << "ERROR: can't create socket" << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     for (i = nameIndex; !(i->if_index == 0 && i->if_name == nullptr); i++)
     {
         strcpy(ifr.ifr_name, i->if_name);
-        ioctl(sockd, SIOCGIFFLAGS, &ifr);
+        ioctl(_socket->getDescriptor(), SIOCGIFFLAGS, &ifr);
         std::cout << i->if_index << ": " << i->if_name << " " << ((ifr.ifr_ifru.ifru_flags |= IFF_UP) ? "UP" : "DOWN") << std::endl;
     }
 

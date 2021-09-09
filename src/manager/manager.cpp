@@ -1,6 +1,6 @@
 #include "manager/manager.h"
 
-Manager::Manager() : _device(""), _outputFile(""), _protocol(0), _sockd(-1), _socket(nullptr)
+Manager::Manager() : _device(""), _outputFile(""), _eProtocol(0), _iProtocol(0), _sockd(-1), _socket(nullptr), _parser(nullptr)
 {
 }
 
@@ -12,7 +12,7 @@ void Manager::init(int argc, char *argv[])
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "p:d:f:lh")) != -1)
+    while ((opt = getopt(argc, argv, "e:i:d:f:lh")) != -1)
     {
         switch (opt)
         {
@@ -21,8 +21,11 @@ void Manager::init(int argc, char *argv[])
         case 'd':
             _device = getOption(optarg);
             break;
-        case 'p':
-            _protocol = getProtocolByName(getOption(optarg));
+        case 'e':
+            _eProtocol = getEthernetProtoByName(getOption(optarg));
+            break;
+        case 'i':
+            _iProtocol = getInternetProtoByName(getOption(optarg));
             break;
         case 'f':
             _outputFile = getOption(optarg);
@@ -39,6 +42,34 @@ void Manager::init(int argc, char *argv[])
 void Manager::start()
 {
     openInterface();
+
+    ssize_t bsize = 0;
+    Buffer *b = new Buffer(65535);
+    while (true)
+    {
+        bsize = recvfrom(_socket->getDescriptor(), b->getBuffer(), b->getCapacity(), 0, nullptr, nullptr);
+        if (bsize == -1)
+        {
+            throw Exception("ERROR: Failed to get packets");
+        }
+        _parser = std::make_unique<Parser>();
+        _parser->parse(b);
+        EthernetHeader ethdrp = _parser->getEthernetHeader();
+        IPHeader iphdrp = _parser->getIPHeader();
+
+        std::cout << "Incoming packet:\n";
+        std::cout << "Source mac: ";
+        for (auto i : ethdrp.getSourceAddress())
+            printf("%:2X", i);
+        std::cout << std::endl;
+
+        std::cout << "Destination mac: ";
+        for (auto i : ethdrp.getDestinationAddress())
+            printf("%:2X", i);
+        std::cout << std::endl;
+
+        std::cout << "Protocol: " << ethdrp.getType() << "\n";
+    }
 }
 
 void Manager::cleanup()
@@ -63,7 +94,7 @@ void Manager::listDevicesAndExit()
         exit(EXIT_FAILURE);
     }
 
-    _socket = std::make_unique<Socket>(Socket::Domain::INET, Socket::Type::DGRAM, 0);
+    _socket = std::make_unique<Socket>(Socket::Domain::INET, Socket::Type::DGRAM, static_cast<int>(IProtocols::IP));
     if (_socket->getDescriptor() < 0)
     {
         if_freenameindex(nameIndex);
@@ -86,11 +117,12 @@ void Manager::listDevicesAndExit()
 void Manager::printHelpAndExit()
 {
     std::cout << "Observer 0.0.1 - network packet analyzer" << "\n";
-    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-p=\'protocol\'] [-f=\'filename\']" << "\n" << "\n";
+    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-e=\'ethernet protocol\'] [-i=\'internet protocol\'] [-f=\'filename\']" << "\n" << "\n";
     std::cout << "       -h    Print help and exit\n";
     std::cout << "       -l    Print all network interfaces in system and exit\n";
     std::cout << "       -d    Set device for analyzing\n";
-    std::cout << "       -p    Set protocol for analyzing\n";
+    std::cout << "       -e    Set ethernet protocol for analyzing\n";
+    std::cout << "       -i    Set internet protocol for analyzing\n";
     std::cout << "       -f    Set output file\n";
     exit(EXIT_SUCCESS);
 }
@@ -108,7 +140,7 @@ void Manager::openInterface()
     if (devIndex == 0)
     {
         // We have "any" device
-        _socket = std::make_unique<Socket>(Socket::Domain::PACKET, Socket::Type::DGRAM, 0);
+        _socket = std::make_unique<Socket>(Socket::Domain::PACKET, Socket::Type::DGRAM, static_cast<int>(IProtocols::IP));
         if (_socket->getDescriptor() < 0)
         {
             throw Exception("ERROR: can't create UDP socket");
@@ -117,7 +149,7 @@ void Manager::openInterface()
     else
     {
         // We specified concrete device and now can open raw socket
-        _socket = std::make_unique<Socket>(Socket::Domain::PACKET, Socket::Type::RAW, htons(_protocol));
+        _socket = std::make_unique<Socket>(Socket::Domain::PACKET, Socket::Type::RAW, htons(_iProtocol));
         if (_socket->getDescriptor() < 0)
         {
             throw Exception("ERROR: can't create RAW socket");
@@ -126,7 +158,7 @@ void Manager::openInterface()
 
     // TODO: we need to bind socket to device which we want to observe
     saddrll.sll_family = AF_PACKET;
-    saddrll.sll_protocol = htons(_protocol);
+    saddrll.sll_protocol = htons(_eProtocol);
     saddrll.sll_ifindex = devIndex;
     
     if (bind(_socket->getDescriptor(), (const sockaddr*)&saddrll, sizeof(saddrll)) < 0)
@@ -146,25 +178,48 @@ void Manager::openInterface()
     }
 }
 
-int Manager::getProtocolByName(const std::string& name) const
+int Manager::getEthernetProtoByName(const std::string& name) const
 {
     if (name == "IPv4")
     {
-        return static_cast<int>(Protocols::IPv4);
+        return static_cast<int>(EProtocols::IPv4);
     }
     else if (name == "IPv6")
     {
-        return static_cast<int>(Protocols::IPv6);
+        return static_cast<int>(EProtocols::IPv6);
     }
     else if (name == "ARP")
     {
-        return static_cast<int>(Protocols::ARP);
+        return static_cast<int>(EProtocols::ARP);
     }
     else if (name == "ALL")
     {
-        return static_cast<int>(Protocols::ALL);
+        return static_cast<int>(EProtocols::ALL);
     }
-    return 0;
+    else
+    {
+        return static_cast<int>(EProtocols::IPv4);
+    }
+}
+
+int Manager::getInternetProtoByName(const std::string& name) const
+{
+    if (name == "IP")
+    {
+        return static_cast<int>(IProtocols::IP);
+    }
+    else if (name == "TCP")
+    {
+        return static_cast<int>(IProtocols::TCP);
+    }
+    else if (name == "UDP")
+    {
+        return static_cast<int>(IProtocols::UDP);
+    }
+    else
+    {
+        return static_cast<int>(IProtocols::IP);
+    }
 }
 
 std::string Manager::getOption(char* option)

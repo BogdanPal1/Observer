@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     try
     {
         a.init(argc, argv);
+        a.start();
     }
     catch(Exception& e)
     {

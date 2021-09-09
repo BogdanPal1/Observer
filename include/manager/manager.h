@@ -15,6 +15,8 @@
 
 #include "exceptions/exceptions.h"
 #include "socket/socket.h"
+#include "buffer/buffer.h"
+#include "parser/parser.h"
 
 /**
  * @brief The Observer class 
@@ -47,17 +49,18 @@ private:
     [[ noreturn ]] void listDevicesAndExit();
     [[ noreturn ]] void printHelpAndExit();
     unsigned int getDeviceIndex(const std::string& name) const;
-    int getProtocolByName(const std::string& name) const;
+    int getEthernetProtoByName(const std::string& name) const;
+    int getInternetProtoByName(const std::string& name) const;
     void openInterface();
     std::string getOption(char* option);
 
 private:
     /**
-     * @brief The Protocols enumeration
+     * @brief The Ethernet Protocols enumeration
      * 
      * 
      */
-    enum class Protocols
+    enum class EProtocols
     {
         IPv4 = ETH_P_IP,
         IPv6 = ETH_P_IPV6,
@@ -65,12 +68,26 @@ private:
         ALL = ETH_P_ALL,
     };
 
+    /**
+     * @brief The Internet Protocols enumeration
+     *
+     *
+     */
+    enum class IProtocols
+    {
+        IP = 0,
+        TCP = 6,
+        UDP = 17,
+    };
+
 private:
     std::string _device;
     std::string _outputFile;
-    int _protocol;
+    int _eProtocol;
+    int _iProtocol;
     int _sockd;
     std::unique_ptr<Socket> _socket;
+    std::unique_ptr<Parser> _parser;
 };
 
 #endif // MANAGER_H

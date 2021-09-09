@@ -1,14 +1,13 @@
 #ifndef IP_HEADER_H
 #define IP_HEADER_H
 
-#include <netinet/ip.h>
+#include <string>
 #include <cstdint>
 
 class IPHeader
 {
 public:
     IPHeader();
-    ~IPHeader();
 
     void setIhl(uint8_t ihl);
     void setVersion(uint8_t version);
@@ -18,8 +17,8 @@ public:
     void setLen(uint16_t tot_len);
     void setChecksum(uint16_t check);
     void setProtocol(uint8_t protocol);
-    void setSource(uint32_t saddr);
-    void setDestination(uint32_t daddr);
+    void setSource(const char* source);
+    void setDestination(const char* destination);
 
     uint8_t getIhl() const;
     uint8_t getVersion() const;
@@ -29,11 +28,20 @@ public:
     uint16_t getLen() const;
     uint16_t getChecksum() const;
     uint8_t getProtocol() const;
-    uint32_t getSource() const;
-    uint32_t getDestination() const;
+    const std::string& getSource() const;
+    const std::string& getDestination() const;
 
 private:
-    struct iphdr* _ip;
+    uint8_t _ihl;
+    uint8_t _version;
+    uint8_t _tos;
+    uint16_t _id;
+    uint8_t _ttl;
+    uint16_t _tot_len;
+    uint16_t _checksum;
+    uint8_t _protocol;
+    std::string _source;
+    std::string _destination;
 };
 
 #endif // IP_HEADER_H

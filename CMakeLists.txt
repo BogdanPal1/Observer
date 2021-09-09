@@ -23,4 +23,6 @@ add_subdirectory(src/manager)
 
 add_subdirectory(src/exceptions)
 
+add_subdirectory(src/parser)
+
 add_subdirectory(app)

@@ -2,42 +2,48 @@
 
 EthernetHeader::EthernetHeader()
 {
-    _eth = new ethhdr;
+    _protocolType = 0;
 }
 
-EthernetHeader::~EthernetHeader()
+EthernetHeader::EthernetHeader(unsigned char* source, unsigned char* destination, unsigned short protocol)
 {
-    delete _eth;
+    for (size_t i = 0; i < ETH_ALEN; ++i)
+    {
+        _srcAddr.push_back(source[i]);
+        _destAddr.push_back(destination[i]);
+    }
+
+    _protocolType = protocol;
+}
+ 
+void EthernetHeader::setDestinationAddress(const unsigned char* destination)
+{
+    for (size_t i = 0; i < ETH_ALEN; ++i)
+        _destAddr.push_back(destination[i]);
 }
 
-void EthernetHeader::setDestinationAddress(unsigned char* destination)
+void EthernetHeader::setSourceAddress(const unsigned char* source)
 {
-    for (int i = 0; i < ETH_ALEN; ++i)
-        _eth->h_dest[i] = destination[i];
+    for (size_t i = 0; i < ETH_ALEN; ++i)
+        _srcAddr.push_back(source[i]);
 }
 
-void EthernetHeader::setSourceAddress(unsigned char* source)
+const std::vector<unsigned char>& EthernetHeader::getDestinationAddress() const
 {
-    for (int i = 0; i < ETH_ALEN; ++i)
-        _eth->h_source[i] = source[i];
+    return _destAddr;
 }
 
-unsigned char* EthernetHeader::getDestinationAddress() const
+const std::vector<unsigned char>& EthernetHeader::getSourceAddress() const
 {
-    return _eth->h_dest;
+    return _srcAddr;
 }
 
-unsigned char* EthernetHeader::getSourceAddress() const
+void EthernetHeader::setType(unsigned short protocol)
 {
-    return _eth->h_source;
-}
-
-void EthernetHeader::setType(unsigned short protocolType)
-{
-    _eth->h_proto = protocolType;
+    _protocolType = protocol;
 }
 
 unsigned short EthernetHeader::getType() const
 {
-    return _eth->h_proto;
+    return _protocolType;
 }

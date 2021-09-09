@@ -2,105 +2,99 @@
 
 IPHeader::IPHeader()
 {
-    _ip = new iphdr;
-}
-
-IPHeader::~IPHeader()
-{
-    delete _ip;
 }
 
 void IPHeader::setIhl(uint8_t ihl)
 {
-    _ip->ihl = ihl;
+    _ihl = ihl;
 }
 
 void IPHeader::setVersion(uint8_t version)
 {
-    _ip->version = version;
+    _version = version;
 }
 
 void IPHeader::setTos(uint8_t tos)
 {
-    _ip->tos = tos;
+    _tos = tos;
 }
 
 void IPHeader::setTtl(uint8_t ttl)
 {
-    _ip->ttl = ttl;
+    _ttl = ttl;
 }
 
 void IPHeader::setId(uint16_t id)
 {
-    _ip->id = id;
+    _id = id;
 }
 
 void IPHeader::setLen(uint16_t tot_len)
 {
-    _ip->tot_len = tot_len;
+    _tot_len = tot_len;
 }
 
 void IPHeader::setChecksum(uint16_t check)
 {
-    _ip->check = check;
+    _checksum = check;
 }
 
 void IPHeader::setProtocol(uint8_t protocol)
 {
-    _ip->protocol = protocol;
+    _protocol = protocol;
 }
 
-void IPHeader::setSource(uint32_t saddr)
+void IPHeader::setSource(const char* source)
 {
-    _ip->saddr = saddr;
+    _source.assign(source);
 }
 
-void IPHeader::setDestination(uint32_t daddr)
+void IPHeader::setDestination(const char* destination)
 {
-    _ip->daddr = daddr;
+    _destination.assign(destination);
 }
 
 uint8_t IPHeader::getIhl() const
 {
-    return _ip->ihl;
+    return _ihl;
 }
 
 uint8_t IPHeader::getVersion() const
 {
-    return _ip->version;
+    return _version;
 }
 
 uint8_t IPHeader::getTos() const
 {
-    return _ip->tos;
+    return _tos;
 }
 
 uint8_t IPHeader::getTtl() const
 {
-    return _ip->ttl;
+    return _ttl;
 }
 
 uint16_t IPHeader::getId() const
 {
-    return _ip->id;
+    return _id;
 }
 
 uint16_t IPHeader::getLen() const
 {
-    return _ip->tot_len;
+    return _tot_len;
 }
 
 uint8_t IPHeader::getProtocol() const
 {
-    return _ip->protocol;
+    return _protocol;
 }
 
-uint32_t IPHeader::getSource() const
+const std::string& IPHeader::getSource() const
 {
-    return _ip->saddr;
+    return _source;
 }
 
-uint32_t IPHeader::getDestination() const
+const std::string& IPHeader::getDestination() const
 {
-    return _ip->daddr;
+    return _destination;
 }

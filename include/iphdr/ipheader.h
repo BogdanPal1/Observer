@@ -1,8 +1,9 @@
-#ifndef IP_HEADER_H
-#define IP_HEADER_H
+#ifndef OBSERVER_IP_HEADER_H
+#define OBSERVER_IP_HEADER_H
 
 #include <string>
 #include <cstdint>
+#include <ostream>
 
 class IPHeader
 {
@@ -10,7 +11,7 @@ public:
     IPHeader();
 
     void setIhl(uint8_t ihl);
-    void setVersion(uint8_t version);
+    void setVersion(uint32_t version);
     void setTos(uint8_t tos);
     void setTtl(uint8_t ttl);
     void setId(uint16_t id);
@@ -21,7 +22,7 @@ public:
     void setDestination(const char* destination);
 
     uint8_t getIhl() const;
-    uint8_t getVersion() const;
+    uint32_t getVersion() const;
     uint8_t getTos() const;
     uint8_t getTtl() const;
     uint16_t getId() const;
@@ -31,9 +32,11 @@ public:
     const std::string& getSource() const;
     const std::string& getDestination() const;
 
+    friend std::ostream& operator<<(std::ostream& os, const IPHeader& header);
+
 private:
     uint8_t _ihl;
-    uint8_t _version;
+    uint32_t _version;
     uint8_t _tos;
     uint16_t _id;
     uint8_t _ttl;
@@ -44,4 +47,4 @@ private:
     std::string _destination;
 };
 
-#endif // IP_HEADER_H
+#endif // OBSERVER_IP_HEADER_H

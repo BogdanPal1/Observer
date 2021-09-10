@@ -61,6 +61,7 @@ void Manager::start()
 
         std::cout << "Incoming packet number: " << stopper << std::endl;
         std::cout << ethdrp;
+        std::cout << iphdrp;
         ++stopper;
     }
 }

@@ -45,7 +45,9 @@ void Manager::start()
 
     ssize_t bsize = 0;
     Buffer *b = new Buffer(65535);
-    while (true)
+
+    int stopper = 0;
+    while (stopper != 10)
     {
         bsize = recvfrom(_socket->getDescriptor(), b->getBuffer(), b->getCapacity(), 0, nullptr, nullptr);
         if (bsize == -1)
@@ -57,18 +59,9 @@ void Manager::start()
         EthernetHeader ethdrp = _parser->getEthernetHeader();
         IPHeader iphdrp = _parser->getIPHeader();
 
-        std::cout << "Incoming packet:\n";
-        std::cout << "Source mac: ";
-        for (auto i : ethdrp.getSourceAddress())
-            printf("%:2X", i);
-        std::cout << std::endl;
-
-        std::cout << "Destination mac: ";
-        for (auto i : ethdrp.getDestinationAddress())
-            printf("%:2X", i);
-        std::cout << std::endl;
-
-        std::cout << "Protocol: " << ethdrp.getType() << "\n";
+        std::cout << "Incoming packet number: " << stopper << std::endl;
+        std::cout << ethdrp;
+        ++stopper;
     }
 }
 

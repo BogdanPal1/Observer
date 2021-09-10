@@ -44,6 +44,7 @@ unsigned short EthernetHeader::getType() const
 
 std::ostream& operator<<(std::ostream& os, const EthernetHeader& header)
 {
+    os << "<------Ethernet Header------>" << std::endl;
     os << "Source mac: "; 
     for (auto i : header._srcAddr)
         os << std::setw(2) << std::setfill('0') <<  std::hex << static_cast<unsigned int>(i) << " ";

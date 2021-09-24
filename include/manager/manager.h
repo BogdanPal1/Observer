@@ -3,8 +3,6 @@
 
 #include <getopt.h>
 #include <net/if.h>
-#include <netinet/in.h>
-#include <netinet/if_ether.h>
 #include <netpacket/packet.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
@@ -40,7 +38,7 @@ public:
     void cleanup();
 
 private:
-    Manager();
+    Manager() : _eProtocol(0), _iProtocol(0), _sockd(-1), _socket(nullptr), _parser(nullptr){};
     Manager(const Manager& other) = delete;
     Manager& operator=(const Manager& other) = delete;
     Manager(const Manager&& other) = delete;
@@ -53,32 +51,6 @@ private:
     int getInternetProtoByName(const std::string& name) const;
     void openInterface();
     std::string getOption(char* option);
-
-private:
-    /**
-     * @brief The Ethernet Protocols enumeration
-     * 
-     * 
-     */
-    enum class EProtocols
-    {
-        IPv4 = ETH_P_IP,
-        IPv6 = ETH_P_IPV6,
-        ARP = ETH_P_ARP,
-        ALL = ETH_P_ALL,
-    };
-
-    /**
-     * @brief The Internet Protocols enumeration
-     *
-     *
-     */
-    enum class IProtocols
-    {
-        IP = 0,
-        TCP = 6,
-        UDP = 17,
-    };
 
 private:
     std::string _device;

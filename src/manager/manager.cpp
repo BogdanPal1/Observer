@@ -1,9 +1,5 @@
 #include "manager/manager.h"
 
-Manager::Manager() : _device(""), _outputFile(""), _eProtocol(0), _iProtocol(0), _sockd(-1), _socket(nullptr), _parser(nullptr)
-{
-}
-
 Manager::~Manager()
 {
 }
@@ -46,24 +42,18 @@ void Manager::start()
     ssize_t bsize = 0;
     Buffer *b = new Buffer(65535);
 
-    int stopper = 0;
-    while (stopper != 10)
+    bsize = recvfrom(_socket->getDescriptor(), b->getBuffer(), b->getCapacity(), 0, nullptr, nullptr);
+    if (bsize == -1)
     {
-        bsize = recvfrom(_socket->getDescriptor(), b->getBuffer(), b->getCapacity(), 0, nullptr, nullptr);
-        if (bsize == -1)
-        {
-            throw Exception("ERROR: Failed to get packets");
-        }
-        _parser = std::make_unique<Parser>();
-        _parser->parse(b);
-        EthernetHeader ethdrp = _parser->getEthernetHeader();
-        IPHeader iphdrp = _parser->getIPHeader();
-
-        std::cout << "Incoming packet number: " << stopper << std::endl;
-        std::cout << ethdrp;
-        std::cout << iphdrp;
-        ++stopper;
+        throw Exception("ERROR: Failed to get packets");
     }
+    _parser = std::make_unique<Parser>();
+    _parser->parse(b);
+    EthernetHeader ethdrp = _parser->getEthernetHeader();
+    IPHeader iphdrp = _parser->getIPHeader();
+
+    std::cout << ethdrp;
+    std::cout << iphdrp;
 }
 
 void Manager::cleanup()
@@ -110,8 +100,11 @@ void Manager::listDevicesAndExit()
 
 void Manager::printHelpAndExit()
 {
-    std::cout << "Observer 0.0.1 - network packet analyzer" << "\n";
-    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-e=\'ethernet protocol\'] [-i=\'internet protocol\'] [-f=\'filename\']" << "\n" << "\n";
+    std::cout << "Observer 0.0.1 - network packet analyzer"
+              << "\n";
+    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-e=\'ethernet protocol\'] [-i=\'internet protocol\'] [-f=\'filename\']"
+              << "\n"
+              << "\n";
     std::cout << "       -h    Print help and exit\n";
     std::cout << "       -l    Print all network interfaces in system and exit\n";
     std::cout << "       -d    Set device for analyzing\n";
@@ -154,7 +147,7 @@ void Manager::openInterface()
     saddrll.sll_family = AF_PACKET;
     saddrll.sll_protocol = htons(_eProtocol);
     saddrll.sll_ifindex = devIndex;
-    
+
     if (bind(_socket->getDescriptor(), (const sockaddr*)&saddrll, sizeof(saddrll)) < 0)
     {
         if (errno == ENODEV)
@@ -165,7 +158,7 @@ void Manager::openInterface()
         {
             throw Exception("ERROR: network is down");
         }
-        else 
+        else
         {
             throw Exception("ERROR: unknown error: " + std::to_string(errno));
         }

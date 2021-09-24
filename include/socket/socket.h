@@ -2,8 +2,6 @@
 #define OBSERVER_SOCKET_H
 
 #include <sys/socket.h>
-#include <netinet/if_ether.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -22,12 +20,12 @@ public:
     enum class Type
     {
         DGRAM = SOCK_DGRAM,
-        RAW = SOCK_RAW,
+        RAW   = SOCK_RAW,
     };
 
     enum class Domain
     {
-        INET = AF_INET,
+        INET   = AF_INET,
         PACKET = AF_PACKET,
     };
 

@@ -1,9 +1,5 @@
 #include "iphdr/ipheader.h"
 
-IPHeader::IPHeader()
-{
-}
-
 void IPHeader::setIhl(uint8_t ihl)
 {
     _ihl = ihl;

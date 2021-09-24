@@ -1,13 +1,24 @@
-#ifndef ETHERNET_HEADER_H
-#define ETHERNET_HEADER_H
+#ifndef OBSERVER_ETHERNET_HEADER_H
+#define OBSERVER_ETHERNET_HEADER_H
 
 #include <ostream>
 #include <array>
 
+/**
+ * @brief The Ethernet Protocols enumeration
+ * 
+ */
+enum class EProtocols
+{
+    IPv4 = 0x0800,
+    IPv6 = 0x86DD,
+    ARP  = 0x0806,
+    ALL  = 0x0003,
+};
+
 class EthernetHeader
 {
 public:
-    EthernetHeader();
     void setDestinationAddress(const unsigned char* destination);
     void setSourceAddress(const unsigned char* source);
     void setType(unsigned short protocol);
@@ -19,12 +30,12 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const EthernetHeader& header);
 
 public:
-    static const unsigned short MAC_LEN;
+    static const unsigned short MAC_LEN = 6;
 
 private:
-    std::array<unsigned char, 6> _destAddr;
-    std::array<unsigned char, 6> _srcAddr;
-    unsigned short _protocolType;
+    std::array<unsigned char, 6> _destAddr{0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+    std::array<unsigned char, 6> _srcAddr{0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+    unsigned short _protocolType = 0;
 };
 
-#endif // ETHERNET_HEADER_H
+#endif // OBSERVER_ETHERNET_HEADER_H

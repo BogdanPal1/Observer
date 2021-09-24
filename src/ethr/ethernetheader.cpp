@@ -1,14 +1,5 @@
 #include "ethr/ethernetheader.h"
 #include <iomanip>
-
-const unsigned short EthernetHeader::MAC_LEN = 6;
-
-EthernetHeader::EthernetHeader()
-{
-    _srcAddr.fill(0x0);
-    _destAddr.fill(0x0);
-    _protocolType = 0;
-}
  
 void EthernetHeader::setDestinationAddress(const unsigned char* destination)
 {

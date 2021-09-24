@@ -102,14 +102,14 @@ void Manager::printHelpAndExit()
 {
     std::cout << "Observer 0.0.1 - network packet analyzer"
               << "\n";
-    std::cout << "Usage: observer [-h] [-l] [-d=\'device\'] [-e=\'ethernet protocol\'] [-i=\'internet protocol\'] [-f=\'filename\']"
-              << "\n"
+    std::cout << "Usage: observer [-h] [-l] [-d \'device\'] [-e \'ethernet protocol\'] [-i \'internet protocol\'] [-f \'filename\']"
               << "\n";
+    std::cout << "Options:\n";
     std::cout << "       -h    Print help and exit\n";
     std::cout << "       -l    Print all network interfaces in system and exit\n";
     std::cout << "       -d    Set device for analyzing\n";
-    std::cout << "       -e    Set ethernet protocol for analyzing\n";
-    std::cout << "       -i    Set internet protocol for analyzing\n";
+    std::cout << "       -e    Set ethernet protocol for analyzing (IP4, IP6, ARP, ALL)\n";
+    std::cout << "       -i    Set internet protocol for analyzing (IP, TCP, UDP)\n";
     std::cout << "       -f    Set output file\n";
     exit(EXIT_SUCCESS);
 }
@@ -167,11 +167,11 @@ void Manager::openInterface()
 
 int Manager::getEthernetProtoByName(const std::string& name) const
 {
-    if (name == "IPv4")
+    if (name == "IP4")
     {
         return static_cast<int>(EProtocols::IPv4);
     }
-    else if (name == "IPv6")
+    else if (name == "IP6")
     {
         return static_cast<int>(EProtocols::IPv6);
     }
